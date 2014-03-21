@@ -1,5 +1,15 @@
 from django.contrib import admin
+from game.models import Board, Tile
 
-from game.models import Game
+class TileInline(admin.TabularInline):
+    model = Tile
 
-admin.site.register(Game)
+class BoardAdmin(admin.ModelAdmin):
+    fieldsets = [
+        ('Width', {'fields': ['width']}),
+        ('Height', {'fields': ['height']}),
+        ('Mines', {'fields': ['numberOfMines']}),
+    ]
+    inlines = [TileInline]
+
+admin.site.register(Board, BoardAdmin)

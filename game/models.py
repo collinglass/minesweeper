@@ -1,14 +1,32 @@
 from django.db import models
-#from matrix_field import MatrixField
 from django.utils import timezone
 
 # Create your models here.
-class Game(models.Model):
-    board = models.CharField(max_length=200)
-    over = models.BooleanField()
-    winner = models.BooleanField()
-    counter = models.PositiveSmallIntegerField()
-    start_date = models.DateTimeField('date started')
-    end_date = models.DateTimeField('date ended')
-    def was_published_recently(self):
-        return self.pub_date >= timezone.now() - datetime.timedelta(days=1)
+class Board(models.Model):
+    width = models.PositiveSmallIntegerField()
+    height = models.PositiveSmallIntegerField()
+    numberOfMines = models.PositiveSmallIntegerField()
+
+class Tile(models.Model):
+	board = models.ForeignKey(Board)
+	mine = models.BooleanField()
+	revealed = models.BooleanField()
+	marked = models.BooleanField()
+	value = models.PositiveSmallIntegerField()
+	x = models.PositiveSmallIntegerField()
+	y = models.PositiveSmallIntegerField()
+
+	@classmethod
+	def create(board, mine, x, y):
+		return Tile(board=board, mine=mine, revealed=False, marked=False, value=False, x=x, y=y)
+
+	def reveal(self):
+		self.revealed = True
+		return self.mine == True
+
+	def mark(self):
+		self.marked = True
+		return self.mine == True
+
+	def evaluate(self, value):
+		self.value = value

@@ -1,13 +1,11 @@
-<h1>Game Board: {{ game.board }}</h1>
+<h1>Game Board: {{ board.id }}</h1>
 {% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
-<form action="{% url 'game:turn' game.id %}" method="post">
+<form action="{% url 'game:turn' board.id %}" method="post">
 {% csrf_token %}
 <ul>
-    <li>Game Over: {{ game.over }}</li>
-    <li>Game Winner: {{ game.winner }}</li>
-    <li>Turn Counter: {{ game.counter }}</li>
-    <li>Game Started: {{ game.start_date }}</li>
-    <li>Game Ended: {{ game.end_date }}</li>
+    <li>Board Width: {{ board.width }}</li>
+    <li>Board Height: {{ board.height }}</li>
+    <li>Number of Mines: {{ board.numberOfMines }}</li>
 </ul>
 <input type="submit" value="Turn" />
 </form>

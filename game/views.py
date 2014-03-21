@@ -1,20 +1,25 @@
 from django.shortcuts import render, get_object_or_404
+from django.http import HttpResponseRedirect
 
-from game.models import Game
+from game.models import Board, Tile
 
 def index(request):
-    latest_game_list = Game.objects.all().order_by('-start_date')[:5]
-    context = {'latest_game_list': latest_game_list}
-    return render(request, 'game/index.html', context)
+	newboard = Board.objects.create(width=10, 
+		height=10, numberOfMines=25)
+	board = get_object_or_404(Board, pk=newboard.id)
+	for x in range(0, newboard.width):
+		for y in range(0, newboard.height):
+			tile = Tile.objects.create(board=board, mine=False, revealed=False, marked=False, value=False, x=x, y=y)
+	return render(request, 'game/detail.html', {'board': board})
 
-def detail(request, game_id):
-    game = get_object_or_404(Game, pk=game_id)
-    return render(request, 'game/detail.html', {'game': game})
+def detail(request, board_id):
+    board = get_object_or_404(Board, pk=board_id)
+    return render(request, 'game/detail.html', {'board': board})
 
-def results(request, game_id):
-    return HttpResponse("You're looking at the results of game %s." % game_id)
+def results(request, board_id):
+    return HttpResponse("You're looking at the results of board %s." % board_id)
 
-def turn(request, game_id):
-    return HttpResponse("You're turn on game %s." % game_id)
+def turn(request, board_id):
+    return HttpResponse("You're turn on board %s." % board_id)
 
 # Create your views here.
