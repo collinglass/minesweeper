@@ -16,10 +16,6 @@ class Tile(models.Model):
 	x = models.PositiveSmallIntegerField()
 	y = models.PositiveSmallIntegerField()
 
-	@classmethod
-	def create(board, mine, x, y):
-		return Tile(board=board, mine=mine, revealed=False, marked=False, value=False, x=x, y=y)
-
 	def reveal(self):
 		self.revealed = True
 		return self.mine == True
