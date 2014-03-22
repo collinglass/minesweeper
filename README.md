@@ -12,3 +12,7 @@ Go to ```localhost:8000/game/```
 - View Testing (HTTP, game update tests)
 
 - Use HTML5 canvas for board
+
+- Base URL redirect to /game/
+
+- Front end presentation (HTML5, CSS3)
