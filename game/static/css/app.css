@@ -3,8 +3,10 @@
 }
 .tile {
 	display: table-cell;
+	text-align: center;
 }
 .block {
+	float: left;
 	width: 25px;
 	height: 25px;
 }

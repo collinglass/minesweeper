@@ -8,12 +8,10 @@ Minesweeper game in Django
 
 ## TODO
 
-- Display Board (Number adjacent tiles, cover tiles)
-
-- Randomize the Mines
-
 - POST Turn (Choose Tile, Flag Tile, Check Bomb, Check Win)
 
 - Testing
 
 - Use HTML5 canvas for board
+
+- When clicked on blank tile it clears big gap

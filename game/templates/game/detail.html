@@ -1,36 +1,39 @@
 {% load staticfiles %}
 
-<link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}" />
+<link rel="stylesheet" type="text/css" href="{% static 'css/app.css' %}" />
 
 <h1>Game Board: {{ board.id }}</h1>
-{% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
-<form action="{% url 'game:turn' board.id %}" method="post">
 {% csrf_token %}
+<h3>Information:</h3>
 <ul>
-    <li>Board Width: {{ board.width }}</li>
-    <li>Board Height: {{ board.height }}</li>
-    <li>Number of Mines: {{ board.numberOfMines }}</li>
+    <li>Click to reveal tile</li>
+    <li>Shift + Click to flag tile</li>
 </ul>
 {% for tile in tiles %}
 	{% if tile.x == 0 %}
 	<div class="row">
 	{% endif %}
 		<div class="tile">
-		{% if tile.revealed == False %}
+		{% if tile.revealed == False and tile.marked == True %}
+			<img class="block" data-board="{{board.id}}" data-x="{{ tile.x }}" data-y="{{ tile.y }}" src="http://www.rw-designer.com/icon-view/3082.png">
+		{% elif tile.revealed == False %}
 			<img data-board="{{board.id}}" data-x="{{ tile.x }}" data-y="{{ tile.y }}" class="block unrevealed" src="http://www.rw-designer.com/icon-view/3077.png">
 		{% elif tile.revealed == True and tile.mine == False %}
-			<div class="block">{{tile.value}}</div>
+			{% if tile.value != 0 %}
+			<span class="block">{{tile.value}}</span>
+			{% else %}
+			<span class="block"></span>
+			{% endif %}
 		{% elif tile.revealed == True and tile.mine == True %}
-			<img class="block" src="http://home.comcast.net/~supportcd/Icons/Minesweeper.jpg">
-		{% elif tile.marked == True %}
-			<img class="block" src="http://www.rw-designer.com/icon-view/3082.png">
+			<img class="block mine" src="http://home.comcast.net/~supportcd/Icons/Minesweeper.jpg">
 		{% endif %}
 		</div>
 	{% if tile.x == 9 %}
 	</div>
 	{% endif %}
 {% endfor %}
-</form>
+
+<button class="newgame">New Game</button>
 
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
 <script type="text/javascript" src="{% static 'js/app.js' %}"></script>
