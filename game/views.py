@@ -4,12 +4,13 @@ from random import randrange
 
 from game.models import Board, Tile
 
+# Create new Game and Render
 def index(request):
 	board_id, tiles = newBoard()
 	board = get_object_or_404(Board, pk=board_id)
-
 	return render(request, 'game/detail.html', {'board': board, 'tiles': tiles})
 
+# Current Game Render
 def detail(request, board_id):
 	if request.method == 'POST':
 		x = request.POST['x']
@@ -24,12 +25,8 @@ def detail(request, board_id):
 	tiles = Tile.objects.filter(board=board) # Cache tiles to not have to do this everytime
 	return render(request, 'game/detail.html', {'board': board, 'tiles': tiles})
 
-def results(request, board_id):
-	return HttpResponse("You're looking at the results of board %s." % board_id)
 
-def turn(request, board_id):
-	return HttpResponse("You're turn on board %s." % board_id)
-
+### Function Code
 
 # Mark tile
 def mark(board_id, x, y):
@@ -39,24 +36,24 @@ def mark(board_id, x, y):
 
 # Reveal tile
 def reveal(board_id, x, y):
-	if tile[0].revealed == False:
-		tile = Tile.objects.filter(board=board_id,
-		 x=x, y=y)
-		tile.update(revealed = True)
-		#if tile[0].mine == False and tile[0].value == 0:
-		#	if not x == 0:
-		#		tempx = x-1
-		#		print (tempx)
-		#		reveal(board_id, tempx, y)
-		#	if not x == 9:
-		#		tempx = x+1
-		#		reveal(board_id, tempx, y)
-		#	if not y == 0:
-		#		tempy = y-1
-		#		reveal(board_id, x, tempy)
-		#	if not y == 9:
-		#		tempy = y+1
-		#		reveal(board_id, x, tempy)
+	tile = Tile.objects.filter(board=board_id,
+	 x=x, y=y)
+	#if tile[0].revealed == False:
+	tile.update(revealed = True)
+	#if tile[0].mine == False and tile[0].value == 0:
+	#	if not x == 0:
+	#		tempx = x-1
+	#		print (tempx)
+	#		reveal(board_id, tempx, y)
+	#	if not x == 9:
+	#		tempx = x+1
+	#		reveal(board_id, tempx, y)
+	#	if not y == 0:
+	#		tempy = y-1
+	#		reveal(board_id, x, tempy)
+	#	if not y == 9:
+	#		tempy = y+1
+	#		reveal(board_id, x, tempy)
 		
 	
 
