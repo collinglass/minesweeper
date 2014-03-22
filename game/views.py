@@ -1,6 +1,9 @@
 from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponseRedirect
 from random import randrange
+import logging
+
+log = logging.getLogger(__name__)
 
 from game.models import Board, Tile
 
@@ -34,26 +37,26 @@ def mark(board_id, x, y):
 	 x=x, y=y)
 	tile.update(marked = True)
 
-# Reveal tile
+# Reveal tiles
 def reveal(board_id, x, y):
-	tile = Tile.objects.filter(board=board_id,
-	 x=x, y=y)
-	#if tile[0].revealed == False:
-	tile.update(revealed = True)
-	#if tile[0].mine == False and tile[0].value == 0:
-	#	if not x == 0:
-	#		tempx = x-1
-	#		print (tempx)
-	#		reveal(board_id, tempx, y)
-	#	if not x == 9:
-	#		tempx = x+1
-	#		reveal(board_id, tempx, y)
-	#	if not y == 0:
-	#		tempy = y-1
-	#		reveal(board_id, x, tempy)
-	#	if not y == 9:
-	#		tempy = y+1
-	#		reveal(board_id, x, tempy)
+	try:
+		tile = Tile.objects.filter(board=board_id,
+		 x=x, y=y)
+		if tile[0].revealed == False:
+			tile.update(revealed = True)
+			x = int(x)
+			y = int(y)
+			if tile[0].mine == False and tile[0].value == 0:
+				if x != 0:
+					reveal(board_id, x-1, y)
+				if x != 9:
+					reveal(board_id, x+1, y)
+				if y != 0:
+					reveal(board_id, x, y-1)
+				if y != 9:
+					reveal(board_id, x, y+1)
+	except Exception as inst:
+		print inst
 		
 	
 

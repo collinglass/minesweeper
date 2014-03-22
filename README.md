@@ -5,10 +5,9 @@ Minesweeper game in Django
 ## Usage
 
 ```python manage.py runserver```
+Go to ```localhost:8000/game/```
 
 ## TODO
-
-- POST Turn (Choose Tile, Flag Tile, Check Bomb, Check Win)
 
 - Testing
 
