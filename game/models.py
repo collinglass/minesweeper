@@ -5,7 +5,6 @@ from django.utils import timezone
 class Board(models.Model):
     width = models.PositiveSmallIntegerField()
     height = models.PositiveSmallIntegerField()
-    numberOfMines = models.PositiveSmallIntegerField()
 
 class Tile(models.Model):
 	board = models.ForeignKey(Board)

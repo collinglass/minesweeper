@@ -9,8 +9,6 @@ Go to ```localhost:8000/game/```
 
 ## TODO
 
-- Testing
+- View Testing (HTTP, game update tests)
 
 - Use HTML5 canvas for board
-
-- When clicked on blank tile it clears big gap

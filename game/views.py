@@ -9,23 +9,32 @@ from game.models import Board, Tile
 
 # Create new Game and Render
 def index(request):
+	# Create new board and tiles
 	board_id, tiles = newBoard()
+	# Get Board or throw 404 error if not available
 	board = get_object_or_404(Board, pk=board_id)
+	# Render details page
 	return render(request, 'game/detail.html', {'board': board, 'tiles': tiles})
 
 # Current Game Render
 def detail(request, board_id):
+	# If we get a post request
 	if request.method == 'POST':
+		# Get params from POST request
 		x = request.POST['x']
 		y = request.POST['y']
 		shift = request.POST['shift']
+		# if normal click
 		if shift == 'off':
 			reveal(board_id, x, y)
+		# if shift and click
 		if shift == 'on':
 			mark(board_id, x, y)
-
+	# Get Board or throw 404 if not available
 	board = get_object_or_404(Board, pk=board_id)
+	# Get tiles
 	tiles = Tile.objects.filter(board=board) # Cache tiles to not have to do this everytime
+	# Render details page
 	return render(request, 'game/detail.html', {'board': board, 'tiles': tiles})
 
 
@@ -33,19 +42,28 @@ def detail(request, board_id):
 
 # Mark tile
 def mark(board_id, x, y):
-	tile = Tile.objects.filter(board=board_id,
-	 x=x, y=y)
-	tile.update(marked = True)
+	try:
+		# Get tile
+		tile = Tile.objects.filter(board=board_id,
+		 x=x, y=y)
+		# Mark tile
+		tile.update(marked = True)
+	# Handle exception
+	except Exception as inst:
+		print inst
 
 # Reveal tiles
 def reveal(board_id, x, y):
 	try:
+		# Get tile
 		tile = Tile.objects.filter(board=board_id,
 		 x=x, y=y)
+		# Reveal tile
 		if tile[0].revealed == False:
 			tile.update(revealed = True)
 			x = int(x)
 			y = int(y)
+			# IF tile is blank uncover surrounding tiles
 			if tile[0].mine == False and tile[0].value == 0:
 				if x != 0:
 					reveal(board_id, x-1, y)
@@ -55,6 +73,7 @@ def reveal(board_id, x, y):
 					reveal(board_id, x, y-1)
 				if y != 9:
 					reveal(board_id, x, y+1)
+	# Handle Exception
 	except Exception as inst:
 		print inst
 		
@@ -62,52 +81,62 @@ def reveal(board_id, x, y):
 
 # Make new Board
 def newBoard():
-	newboard = Board.objects.create(width=10, 
-		height=10, numberOfMines=25)
-	board_id = newboard.id
-	board = get_object_or_404(Board, pk=board_id)
-	tiles = []
-	# Create tiles
-	for y in range(0, newboard.width):
-		for x in range(0, newboard.height):
-			# 30% will be mines
-			if randrange(9) < 1:
-				tiles.append(Tile.objects.create(board=board, mine=True, revealed=False, marked=False, value=0, x=x, y=y))
-			# 70% will be empty
-			else:
-				tiles.append(Tile.objects.create(board=board, mine=False, revealed=False, marked=False, value=0, x=x, y=y))
-	# Update tile value if adjacent to mine
-	for tile in tiles:
-		position = (tile.y*10) + tile.x
-		# Check left right
-		if tile.x != 0:
-			if tiles[position - 1].mine == True:
-				tile.value += 1
-		if tile.x != 9:
-			if tiles[position + 1].mine == True:
-				tile.value += 1
-		# Check top left, center, right
-		if tile.y != 0:
-			if tiles[position - 10].mine == True:
-				tile.value += 1
-			if tile.x != 9:
-				if tiles[position - 9].mine == True:
-					tile.value += 1
+	try:
+		# New board
+		newboard = Board.objects.create(width=10, 
+			height=10)
+		# Board id
+		board_id = newboard.id
+		# Get board object or throw 404
+		board = get_object_or_404(Board, pk=board_id)
+		# Make array for tiles
+		tiles = []
+		# Create tiles
+		for y in range(0, newboard.width):
+			for x in range(0, newboard.height):
+				# 10% will be mines
+				if randrange(9) < 1:
+					tiles.append(Tile.objects.create(board=board, mine=True, revealed=False, marked=False, value=0, x=x, y=y))
+				# 90% will be empty
+				else:
+					tiles.append(Tile.objects.create(board=board, mine=False, revealed=False, marked=False, value=0, x=x, y=y))
+		# Update tile value if adjacent to mine
+		for tile in tiles:
+			position = (tile.y*10) + tile.x
+			# Check left right
 			if tile.x != 0:
-				if tiles[position - 11].mine == True:
-					tile.value += 1
-		# Check bottom left, center, right
-		if tile.y != 9:
-			if tiles[position + 10].mine == True:
-				tile.value += 1
-			if tile.x != 0:
-				if tiles[position + 9].mine == True:
+				if tiles[position - 1].mine == True:
 					tile.value += 1
 			if tile.x != 9:
-				if tiles[position + 11].mine == True:
+				if tiles[position + 1].mine == True:
 					tile.value += 1
-
-		t = Tile.objects.filter(board=board_id,
-		 		x=tile.x, y=tile.y)
-		t.update(value = tile.value)
+			# Check top left, center, right
+			if tile.y != 0:
+				if tiles[position - 10].mine == True:
+					tile.value += 1
+				if tile.x != 9:
+					if tiles[position - 9].mine == True:
+						tile.value += 1
+				if tile.x != 0:
+					if tiles[position - 11].mine == True:
+						tile.value += 1
+			# Check bottom left, center, right
+			if tile.y != 9:
+				if tiles[position + 10].mine == True:
+					tile.value += 1
+				if tile.x != 0:
+					if tiles[position + 9].mine == True:
+						tile.value += 1
+				if tile.x != 9:
+					if tiles[position + 11].mine == True:
+						tile.value += 1
+			# Get tile
+			t = Tile.objects.filter(board=board_id,
+			 		x=tile.x, y=tile.y)
+			# Update tile
+			t.update(value = tile.value)
+	# Handle Exception
+	except Exception as inst:
+		print inst
+	# Return new board and tiles
 	return (board_id, tiles)
