@@ -27,6 +27,7 @@ jQuery(document).ready(function ($) { // wait until the document is ready
 		var board_id = $(this).attr('data-board');
 		$.ajax({
 			url: '/game/'+board_id+'/',
+			type: "POST",
 			data: postdata,
 			statusCode: {
 				404: function() {
