@@ -39,7 +39,10 @@ def index(request):
 
 def detail(request, board_id):
 	if request.method == 'POST':
-		print (request.POST)
+		tile = Tile.objects.filter(board=board_id,
+		 x=request.POST['x'], y=request.POST['y'])
+		tile.update(revealed = True)
+		print (tile[0].revealed)
 	board = get_object_or_404(Board, pk=board_id)
 	tiles = Tile.objects.filter(board=board) # Cache tiles to not have to do this everytime
 	return render(request, 'game/detail.html', {'board': board, 'tiles': tiles})
