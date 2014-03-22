@@ -1,0 +1,10 @@
+.row {
+	display: table-row;
+}
+.tile {
+	display: table-cell;
+}
+.block {
+	width: 25px;
+	height: 25px;
+}
