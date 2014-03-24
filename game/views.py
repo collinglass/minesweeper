@@ -1,6 +1,8 @@
 from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponseRedirect
-from random import randrange
+from django.core.urlresolvers import reverse
+from django.views import generic
+
 import logging
 
 log = logging.getLogger(__name__)
@@ -9,48 +11,40 @@ from game.models import Board, Tile
 
 # Create new Game and Render
 def index(request):
+	# New board
+	board = Board.objects.create(width=10, height=10)
 	# Create new board and tiles
-	board_id, tiles = newBoard()
-	# Get Board or throw 404 error if not available
-	board = get_object_or_404(Board, pk=board_id)
+	tiles = board.newBoard()
 	# Render details page
 	return render(request, 'game/detail.html', {'board': board, 'tiles': tiles})
 
 # Current Game Render
 def detail(request, board_id):
-	# If we get a post request
-	if request.method == 'POST':
-		# Get params from POST request
-		x = request.POST['x']
-		y = request.POST['y']
-		shift = request.POST['shift']
-		# if normal click
-		if shift == 'off':
-			reveal(board_id, x, y)
-		# if shift and click
-		if shift == 'on':
-			mark(board_id, x, y)
-	# Get Board or throw 404 if not available
-	board = get_object_or_404(Board, pk=board_id)
-	# Get tiles
-	tiles = Tile.objects.filter(board=board) # Cache tiles to not have to do this everytime
-	# Render details page
-	return render(request, 'game/detail.html', {'board': board, 'tiles': tiles})
-
-
-### Function Code
-
-# Mark tile
-def mark(board_id, x, y):
 	try:
-		# Get tile
-		tile = Tile.objects.filter(board=board_id,
-		 x=x, y=y)
-		# Mark tile
-		tile.update(marked = True)
-	# Handle exception
+		# If we get a post request
+		if request.method == 'POST':
+			# Get params from POST request
+			x = request.POST['x']
+			y = request.POST['y']
+			shift = request.POST['shift']
+			# Get tile
+			tile = Tile.objects.filter(board=board_id,
+			 x=x, y=y)
+			# if normal click
+			if shift == 'off':
+				reveal(board_id, x, y)
+			# if shift and click
+			if shift == 'on':
+				tile[0].mark()
+		# Get Board or throw 404 if not available
+		board = get_object_or_404(Board, pk=board_id)
+		# Get tiles
+		tiles = Tile.objects.filter(board=board) # Cache tiles to not have to do this everytime
+		# Render details page
+		return render(request, 'game/detail.html', {'board': board, 'tiles': tiles})
 	except Exception as inst:
 		print inst
+		
 
 # Reveal tiles
 def reveal(board_id, x, y):
@@ -77,66 +71,5 @@ def reveal(board_id, x, y):
 	except Exception as inst:
 		print inst
 		
-	
 
-# Make new Board
-def newBoard():
-	try:
-		# New board
-		newboard = Board.objects.create(width=10, 
-			height=10)
-		# Board id
-		board_id = newboard.id
-		# Get board object or throw 404
-		board = get_object_or_404(Board, pk=board_id)
-		# Make array for tiles
-		tiles = []
-		# Create tiles
-		for y in range(0, newboard.width):
-			for x in range(0, newboard.height):
-				# 10% will be mines
-				if randrange(9) < 1:
-					tiles.append(Tile.objects.create(board=board, mine=True, revealed=False, marked=False, value=0, x=x, y=y))
-				# 90% will be empty
-				else:
-					tiles.append(Tile.objects.create(board=board, mine=False, revealed=False, marked=False, value=0, x=x, y=y))
-		# Update tile value if adjacent to mine
-		for tile in tiles:
-			position = (tile.y*10) + tile.x
-			# Check left right
-			if tile.x != 0:
-				if tiles[position - 1].mine == True:
-					tile.value += 1
-			if tile.x != 9:
-				if tiles[position + 1].mine == True:
-					tile.value += 1
-			# Check top left, center, right
-			if tile.y != 0:
-				if tiles[position - 10].mine == True:
-					tile.value += 1
-				if tile.x != 9:
-					if tiles[position - 9].mine == True:
-						tile.value += 1
-				if tile.x != 0:
-					if tiles[position - 11].mine == True:
-						tile.value += 1
-			# Check bottom left, center, right
-			if tile.y != 9:
-				if tiles[position + 10].mine == True:
-					tile.value += 1
-				if tile.x != 0:
-					if tiles[position + 9].mine == True:
-						tile.value += 1
-				if tile.x != 9:
-					if tiles[position + 11].mine == True:
-						tile.value += 1
-			# Get tile
-			t = Tile.objects.filter(board=board_id,
-			 		x=tile.x, y=tile.y)
-			# Update tile
-			t.update(value = tile.value)
-	# Handle Exception
-	except Exception as inst:
-		print inst
-	# Return new board and tiles
-	return (board_id, tiles)
+

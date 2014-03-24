@@ -17,3 +17,7 @@ Go to ```localhost:8000/game/```
 - Base URL redirect to /game/
 
 - Front end presentation (HTML5, CSS3)
+
+## Notes
+
+Moved most of logic from views to models as seems to be the Django way. Implementations of reveal function on models is super ugly so far

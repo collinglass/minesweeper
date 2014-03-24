@@ -8,7 +8,6 @@ class BoardAdmin(admin.ModelAdmin):
     fieldsets = [
         ('Width', {'fields': ['width']}),
         ('Height', {'fields': ['height']}),
-        ('Mines', {'fields': ['numberOfMines']}),
     ]
     inlines = [TileInline]
 

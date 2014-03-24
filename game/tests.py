@@ -2,6 +2,7 @@ import datetime
 
 from django.utils import timezone
 from django.test import TestCase
+from django.core.urlresolvers import reverse
 
 from game.models import Board, Tile
 from game import views
@@ -70,5 +71,44 @@ class TileUpdateTests(TestCase):
 		tile.marked = True
 		tile.save()
 		self.assertEqual(tile.marked, True)
+
+class GameViewTests(TestCase):
+    def test_new_game_board_not_null(self):
+        """
+        New game, board not null.
+        """
+        response = self.client.get(reverse('game:index'))
+        self.assertEqual(response.status_code, 200)
+        self.assertNotEqual(response.context['board'], None)
+
+    def test_new_game_board_type_board(self):
+        """
+        New game, board is of type board.
+        """
+        response = self.client.get(reverse('game:index'))
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(type(response.context['board']), Board)
+
+    def test_new_game_tile_not_null(self):
+        """
+        New game, tile not null.
+        """
+        response = self.client.get(reverse('game:index'))
+        self.assertEqual(response.status_code, 200)
+        self.assertNotEqual(response.context['tiles'], None)
+
+    def test_new_game_tile_type_tile(self):
+        """
+        New game, tile is of type tile.
+        """
+        response = self.client.get(reverse('game:index'))
+        self.assertEqual(response.status_code, 200)
+        tiles = response.context['tiles']
+        self.assertEqual(type(tiles[0]), Tile)
+
+
+
+
+
 
 
