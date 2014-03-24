@@ -10,8 +10,6 @@ Go to ```localhost:8000/game/```
 
 ## TODO
 
-- View Testing (HTTP, game update tests)
-
 - Use HTML5 canvas for board
 
 - Base URL redirect to /game/
@@ -23,3 +21,6 @@ Go to ```localhost:8000/game/```
 Moved most of logic from views to models as seems to be the Django way. Implementations of reveal function on models is super ugly so far so it is staying in views for now.
 
 Also, I don't like addValue in models.Board. However, Implementation in models.Tile requires getting from the db for every surrounding tile which costs more than is worth the semantic appeal.
+
+Not sure how to testing on win or lose scenarios?
+
