@@ -1,14 +1,12 @@
 {% load staticfiles %}
 
 <link rel="stylesheet" type="text/css" href="{% static 'css/app.css' %}" />
-
+<article class="container">
 <h1>Game Board: {{ board.id }}</h1>
 {% csrf_token %}
-<h3>Information:</h3>
-<ul>
-    <li>Click to reveal tile</li>
-    <li>Shift + Click to flag tile</li>
-</ul>
+<h3>How to play:</h3>
+<div>Click to reveal tile</div>
+<div>Shift + Click to flag tile</div>
 {% for tile in tiles %}
 	{% if tile.x == 0 %}
 	<div class="row">
@@ -33,7 +31,8 @@
 	{% endif %}
 {% endfor %}
 
-<button class="newgame">New Game</button>
+<a class="button large regular blue newgame">New Game</a>
+</article>
 
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
 <script type="text/javascript" src="{% static 'js/app.js' %}"></script>
