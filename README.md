@@ -20,6 +20,6 @@ Go to ```localhost:8000/game/```
 
 ## Notes
 
-Moved most of logic from views to models as seems to be the Django way. Implementations of reveal function on models is super ugly so far.
+Moved most of logic from views to models as seems to be the Django way. Implementations of reveal function on models is super ugly so far so it is staying in views for now.
 
 Also, I don't like addValue in models.Board. However, Implementation in models.Tile requires getting from the db for every surrounding tile which costs more than is worth the semantic appeal.
